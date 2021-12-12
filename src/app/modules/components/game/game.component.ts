@@ -53,7 +53,6 @@ export class GameComponent implements OnInit, OnDestroy {
       this.theEnd = true;
       clearInterval(this.interval);
     }
-    console.log(this.scoreUser.length, this.gameLogicService.scoreComp.length, this.theEnd )
   }
 
   whoIsWinner(){
