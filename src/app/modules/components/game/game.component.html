@@ -4,6 +4,7 @@
   <div class="input-block">
     <label for="timer-value">Enter the time to play</label>
     <input id="timer-value" type="number"
+           step="100"
            formControlName="delay"
            placeholder="Enter time"> ms
   </div>
@@ -14,12 +15,12 @@
 
 </form>
 <div class="score">
-  <p class="computer">Computer : {{gameLogicService.scoreComp.length}}</p>
+  <p class="computer">Computer : {{scoreComp.length}}</p>
   <p class="player">Your score: {{scoreUser.length}}</p>
 </div>
 <div class="game-container">
   <div class="game-row" *ngFor="let row of rows">
-    <div class="game-cell" *ngFor="let ell of cells"></div>
+    <div class="game-cell" *ngFor="let cell of cells"></div>
   </div>
   <div class="block" >
     <div class="item" *ngFor="let item of gameLogicService.items"
@@ -30,10 +31,11 @@
 
 </div>
 <div class="overlay"
-*ngIf="theEnd"
+     *ngIf="theEnd"
 >
   <p class="overlay-text"
   ><span class="winner">{{winner}}</span> is winner</p>
   <button class="overlay-btn"
   (click)="startGameComponent()">New game</button>
+  <button class="overlay-close" (click)="theEnd = !theEnd">X</button>
 </div>
