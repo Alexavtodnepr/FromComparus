@@ -9,7 +9,6 @@ export class GameLogicService {
   private size = 10;
   private availableCells: number[] = [];
   public itemPaint: string = 'yellow';
-  public scoreComp: any[] = [];
 
 
   //Проверка на заполнение и наличие пустых/не пустых ячеек
@@ -28,7 +27,7 @@ export class GameLogicService {
   }
 
   //запуск игры
-  generateItems(length = 1, timer: number){
+  generateItems(length = 1){
   // генерируем ячейку в пустые места
     const positions: number[] = this.emptyCells
       .sort(() => Math.random() - 0.5)
@@ -43,15 +42,7 @@ export class GameLogicService {
         click: false
       }))
     ];
-    // добавляем красный цвет еще одним перебором с заданным интервалом пользователем
-    this.items.forEach((e)=>{
-      setInterval(()=>{
-        if ( e.color === 'yellow' && e.click === false) {
-          this.scoreComp.push(e);
-          this.itemPaint = e.color = 'red';
-        }
-      }, timer)
-    });
+    // this.generateRedItems(timer);
   }
 
   //вычисляем возможные ячейки
