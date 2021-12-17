@@ -1,14 +1,14 @@
-import {Injectable, Input} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Item} from "../models/item";
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameLogicService {
-  @Input() inputValue = 5;
   private size = 10;
   private availableCells: number[] = [];
   public itemPaint: string = 'yellow';
+  public stopArray: Item[] = [];
 
 
   //Проверка на заполнение и наличие пустых/не пустых ячеек
@@ -33,7 +33,7 @@ export class GameLogicService {
       .sort(() => Math.random() - 0.5)
       .slice( 0 , length);
     //склеиваем массивы с координатами
-    this.items = [
+    return this.stopArray = this.items = [
       ...this.items,
       ...positions.map<Item>(position => ({
         col: position % 100,
@@ -42,7 +42,6 @@ export class GameLogicService {
         click: false
       }))
     ];
-    // this.generateRedItems(timer);
   }
 
   //вычисляем возможные ячейки
