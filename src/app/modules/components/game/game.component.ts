@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Item} from "../../models/item";
 import {GameLogicService} from "../../services/game-logic.service";
-import {FormControl, FormGroup} from "@angular/forms";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Subscription} from "rxjs";
 
 @Component({
@@ -20,7 +20,6 @@ export class GameComponent implements OnInit, OnDestroy {
   public theEnd: boolean = false;
   public winner: string = '';
   private subscription: Subscription | any;
-  private showSpeedItems: number = 400;
   private inputValue: number = 0;
 
   constructor(public gameLogicService: GameLogicService) {
@@ -28,24 +27,31 @@ export class GameComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.form = new FormGroup({
-      delay: new FormControl('' || '1200')
+      delay: new FormControl('' || 100, [Validators.required,
+        Validators.min(100)])
     });
   }
 
   // добавляем красный цвет еще одним перебором с заданным интервалом пользователем
   generateRedItems(timer: number){
-    this.gameLogicService.generateItems( 1);
-    this.gameLogicService.items.forEach((e)=>{
-      const redItemInterval = setInterval(()=>{
-        if(this.scoreComp.length == 10 || this.scoreUser.length == 10){
-          this.theEndGame();
-          clearInterval(redItemInterval);
-        }else if ( e.color === 'yellow' && e.click === false && this.scoreComp.length <= 10) {
-          e.color = 'red';
-          this.scoreComp.push(e);
-        }
-      }, timer)
-    });
+    if(this.scoreComp.length >= 10 || this.scoreUser.length >= 10){
+      this.gameLogicService.stopArray = [];
+    }else {
+      this.gameLogicService.generateItems(1)
+        .forEach((e) => {
+          const redItemInterval = setInterval(() => {
+            if (this.scoreComp.length >= 10 || this.scoreUser.length >= 10) {
+              this.theEndGame();
+              clearInterval(redItemInterval);
+              return
+            } else if (e.color === 'yellow' && e.click === false && this.scoreComp.length <= 10) {
+              e.color = 'red';
+              this.scoreComp.push(e);
+              this.generateRedItems(timer)
+            }
+          }, timer)
+        });
+    }
   }
 
 //Обработка событий и добавление зеленых ячеек
@@ -55,6 +61,7 @@ export class GameComponent implements OnInit, OnDestroy {
     }else if ( item.color === 'yellow' && item.click === false) {
       this.scoreUser.push(item);
       item.color = 'green';
+      this.generateRedItems(1200);
     }
   }
 
@@ -65,20 +72,16 @@ export class GameComponent implements OnInit, OnDestroy {
     this.scoreUser = [];
     this.gameLogicService.items = [];
     this.winner = '';
-      const gameValue = +this.submit().delay;
-      console.log('Game has been started', gameValue + ' ms speed');
-    const generateInterval = setInterval(() =>{
-      if(!this.theEnd){
-        this.generateRedItems(gameValue);
-      }else{
-        clearInterval(generateInterval);
-      }
-    }, this.showSpeedItems);
+    const gameValue = +this.submit().delay;
+    console.log('Game has been started', gameValue + ' ms speed');
+    if(!this.theEnd){
+      this.generateRedItems(gameValue);
+    }
   }
 
 //Конец игры
   theEndGame(){
-    if(this.scoreUser.length >= 10 || this.scoreComp.length >= 10) {
+    if(this.scoreUser.length == 10 || this.scoreComp.length == 10) {
       this.theEnd = true;
       this.whoIsWinner();
     }
