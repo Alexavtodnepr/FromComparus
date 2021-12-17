@@ -2,14 +2,20 @@
 [formGroup]="form"
 (ngSubmit)="submit()">
   <div class="input-block">
-    <label for="timer-value">Enter the time to play</label>
+    <label for="timer-value">Enter the time to play
     <input id="timer-value" type="number"
+           min="100"
            step="100"
            formControlName="delay"
-           placeholder="Enter time"> ms
+           placeholder="Enter time"
+    value="{{this.submit().delay}}"> ms
+    <div class="validation"
+    *ngIf="form.get('delay').invalid && form.get('delay').touched">
+      <small *ngIf="form.get('delay').errors">Enter value more than 1</small>
+    </div></label>
   </div>
   <button type="submit"
-          [disabled]="theEnd"
+          [disabled]="theEnd || form.invalid || this.gameLogicService.stopArray.length > 0"
           (click)="startGameComponent()"
   >Start Game</button>
 
@@ -28,14 +34,25 @@
          (click)="clickThisItem(item)"
          ></div>
   </div>
-
 </div>
+
 <div class="overlay"
      *ngIf="theEnd"
 >
-  <p class="overlay-text"
-  ><span class="winner">{{winner}}</span> is winner</p>
+  <div class="overlay-text"
+  ><form
+    [formGroup]="form"
+    (ngSubmit)="submit()">
+    <input id="timer-newGame" type="number"
+           min="100"
+           step="100"
+           formControlName="delay"
+           placeholder="Enter time"
+           value="{{this.submit().delay}}">
+    <p><span class="winner">{{winner}}</span> is winner</p>
+    <button class="overlay-close" (click)="theEnd = !theEnd">x</button>
+  </form>
+  </div>
   <button class="overlay-btn"
   (click)="startGameComponent()">New game</button>
-  <button class="overlay-close" (click)="theEnd = !theEnd">X</button>
 </div>
