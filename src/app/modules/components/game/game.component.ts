@@ -56,12 +56,13 @@ export class GameComponent implements OnInit, OnDestroy {
 
 //Обработка событий и добавление зеленых ячеек
   clickThisItem(item: Item) {
+    const timer = +this.submit().delay;
     if(item.color == 'red' || item.color === 'green' || this.scoreUser.length >= 10 || this.winner == 'Computer'){
       return;
     }else if ( item.color === 'yellow' && item.click === false) {
       this.scoreUser.push(item);
       item.color = 'green';
-      this.generateRedItems(1200);
+      this.generateRedItems(timer);
     }
   }
 
